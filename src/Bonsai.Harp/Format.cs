@@ -285,14 +285,14 @@ namespace Bonsai.Harp
 
         Expression GetAddressExpression(Expression expression, Expression combinator)
         {
-            return expression.Type == typeof(HarpMessage)
+            return expression.Type == typeof(HarpMessage) || expression.Type == typeof(Timestamped<HarpMessage>)
                 ? Expression.Call(combinator, nameof(GetMessageAddress), null, expression)
                 : Expression.Call(combinator, nameof(GetMessageAddress), null);
         }
 
         Expression GetMessageTypeExpression(Expression expression, Expression combinator)
         {
-            return expression.Type == typeof(HarpMessage)
+            return expression.Type == typeof(HarpMessage) || expression.Type == typeof(Timestamped<HarpMessage>)
                 ? Expression.Call(combinator, nameof(GetMessageType), null, expression)
                 : Expression.Call(combinator, nameof(GetMessageType), null);
         }
@@ -311,6 +311,11 @@ namespace Bonsai.Harp
             return address.HasValue ? address.GetValueOrDefault() : message.Address;
         }
 
+        int GetMessageAddress(Timestamped<HarpMessage> timestamped)
+        {
+            return GetMessageAddress(timestamped.Value);
+        }
+
         MessageType GetMessageType()
         {
             var messageType = MessageType;
@@ -323,6 +328,11 @@ namespace Bonsai.Harp
         {
             var messageType = MessageType;
             return messageType.HasValue ? messageType.GetValueOrDefault() : message.MessageType;
+        }
+
+        MessageType GetMessageType(Timestamped<HarpMessage> timestamped)
+        {
+            return GetMessageType(timestamped.Value);
         }
     }
 }
